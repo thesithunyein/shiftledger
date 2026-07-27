@@ -9,15 +9,10 @@ import {
 } from "wagmi";
 import { formatUnits, parseUnits, type Hex } from "viem";
 import { Bot, CheckCircle2, Coins, ExternalLink, Loader2 } from "lucide-react";
+import { BrandMark } from "./components/BrandMark";
 import { SiteBar } from "./components/SiteBar";
 import { erc20Abi, shiftLedgerAbi } from "./lib/abis";
-import {
-  explorerAddr,
-  explorerTx,
-  getDeployment,
-  isDeployed,
-  shortAddr,
-} from "./lib/deployment";
+import { explorerAddr, explorerTx, getDeployment, isDeployed, shortAddr } from "./lib/deployment";
 import {
   demoCsv,
   parsePayrollCsv,
@@ -27,7 +22,6 @@ import {
 } from "./lib/payrollAgent";
 
 type Tab = "employer" | "worker";
-
 const SEPOLIA = 11155111;
 
 export function App() {
@@ -46,11 +40,11 @@ export function App() {
   const [report, setReport] = useState<AgentReport | null>(null);
   const [parseError, setParseError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState("Connect wallet on Sepolia to begin.");
+  const [status, setStatus] = useState("");
   const [lastTx, setLastTx] = useState("");
 
   useEffect(() => {
-    document.title = "ShiftLedger — Industrial Shift Payroll";
+    document.title = "ShiftLedger";
   }, []);
 
   const wrongNetwork = isConnected && chainId !== SEPOLIA;
@@ -71,40 +65,27 @@ export function App() {
     query: { enabled: deployed && Boolean(address) },
   });
 
-  const loadDemo = useCallback(() => {
-    setCsv(demoCsv(address));
-    setParseError("");
-    setReport(null);
-    setRows([]);
-  }, [address]);
-
   const runAgent = useCallback(() => {
     try {
       const parsed = parsePayrollCsv(csv);
       setRows(parsed);
       setParseError("");
       setReport(runPayrollAgent(parsed));
-      setStatus(`Agent analyzed ${parsed.length} workers.`);
     } catch (e) {
-      setParseError(e instanceof Error ? e.message : "Parse failed");
+      setParseError(e instanceof Error ? e.message : "Invalid CSV");
       setReport(null);
       setRows([]);
     }
   }, [csv]);
 
-  const quickDemo = useCallback(() => {
+  const loadAndValidate = useCallback(() => {
     if (!address) return;
     const demo = demoCsv(address);
     setCsv(demo);
     setParseError("");
-    try {
-      const parsed = parsePayrollCsv(demo);
-      setRows(parsed);
-      setReport(runPayrollAgent(parsed));
-      setStatus("Demo loaded — agent flagged overtime row. Faucet sUSD, then settle.");
-    } catch (e) {
-      setParseError(e instanceof Error ? e.message : "Demo failed");
-    }
+    const parsed = parsePayrollCsv(demo);
+    setRows(parsed);
+    setReport(runPayrollAgent(parsed));
   }, [address]);
 
   const totalDisplay = useMemo(() => {
@@ -115,7 +96,7 @@ export function App() {
   async function faucet() {
     if (!deployed || !address) return;
     setBusy(true);
-    setStatus("Minting demo sUSD…");
+    setStatus("Minting sUSD…");
     try {
       const hash = await writeContractAsync({
         address: d.contracts.mockUsdc as `0x${string}`,
@@ -124,7 +105,7 @@ export function App() {
         args: [parseUnits("10000", 6)],
       });
       setLastTx(hash);
-      setStatus("Minted 10,000 sUSD for payroll demo.");
+      setStatus("10,000 sUSD added.");
     } catch (e) {
       setStatus(e instanceof Error ? e.message : "Faucet failed");
     } finally {
@@ -135,7 +116,7 @@ export function App() {
   async function settleBatch() {
     if (!deployed || !address || !report?.approved || rows.length === 0) return;
     setBusy(true);
-    setStatus("Approving ShiftLedger…");
+    setStatus("Approving…");
     try {
       const total = parseUnits(totalDisplay, 6);
       const workers = rows.map((r) => r.wallet as `0x${string}`);
@@ -150,7 +131,7 @@ export function App() {
       });
       if (publicClient) await publicClient.waitForTransactionReceipt({ hash: approveHash });
 
-      setStatus("Settling shift batch on-chain…");
+      setStatus("Settling batch…");
       const hash = await writeContractAsync({
         address: d.contracts.shiftLedger as `0x${string}`,
         abi: shiftLedgerAbi,
@@ -159,7 +140,7 @@ export function App() {
       });
       setLastTx(hash);
       if (publicClient) await publicClient.waitForTransactionReceipt({ hash });
-      setStatus(`Batch settled. ${rows.length} workers paid. Switch to Worker tab for receipts.`);
+      setStatus(`Paid ${rows.length} workers.`);
       refetchReceipts();
     } catch (e) {
       setStatus(e instanceof Error ? e.message : "Settlement failed");
@@ -171,7 +152,6 @@ export function App() {
   return (
     <div className="app">
       <SiteBar
-        deployed={deployed}
         isConnected={isConnected}
         connecting={connecting}
         address={address}
@@ -182,210 +162,175 @@ export function App() {
       />
 
       <main className="main">
-        {!deployed && (
-          <div className="banner warn">
-            Contracts not deployed yet. Run <code>npm run deploy:sepolia</code> from project root.
-          </div>
-        )}
-
         {wrongNetwork && (
-          <div className="banner error">Switch wallet to Ethereum Sepolia (chain 11155111).</div>
+          <div className="banner error">Switch to Ethereum Sepolia.</div>
         )}
-
-        <section className="hero">
-          <img src="/logo.png" alt="ShiftLedger logo" className="hero-logo" />
-          <div className="hero-copy">
-            <h2>Pay shift workers in minutes — not days</h2>
-            <p>
-              Upload factory payroll → AI validates compliance → batch stablecoin settlement → workers
-              get on-chain receipts. Built for SEA manufacturing &amp; logistics.
-            </p>
-            <div className="hero-stats">
-              <div>
-                <strong>AI × Web3</strong>
-                <span>Agent blocks bad batches</span>
-              </div>
-              <div>
-                <strong>Real-World Finance</strong>
-                <span>Stablecoin batch pay</span>
-              </div>
-              <div>
-                <strong>Industrial 5.0</strong>
-                <span>Shift worker workflows</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <ol className="steps">
-          <li className={csv ? "done" : ""}>Load shift roster</li>
-          <li className={report ? "done" : ""}>AI agent review</li>
-          <li className={lastTx ? "done" : ""}>Settle on-chain</li>
-          <li className={receiptIds?.length ? "done" : ""}>Worker receipts</li>
-        </ol>
 
         {tab === "employer" && (
-          <div className="grid grid-2">
-            <div className="card">
-              <h2>Shift payroll upload</h2>
-              <p className="sub">
-                Paste CSV or load demo factory roster. AI agent validates before on-chain batch.
-              </p>
-              <textarea
-                value={csv}
-                onChange={(e) => {
-                  setCsv(e.target.value);
-                  setReport(null);
-                  setParseError("");
-                }}
-                placeholder="name,wallet,hours,rate_usd,role"
-              />
-              {parseError && <div className="banner error">{parseError}</div>}
-              <div className="field" style={{ marginTop: "0.75rem" }}>
-                <label htmlFor="shift">Shift period</label>
-                <input
-                  id="shift"
-                  type="text"
-                  value={shiftPeriod}
-                  onChange={(e) => setShiftPeriod(e.target.value)}
+          <>
+            <header className="page-head">
+              <BrandMark size={48} />
+              <div>
+                <h1>Batch payroll</h1>
+                <p>Upload shift roster, validate, and settle in one transaction.</p>
+              </div>
+            </header>
+
+            <div className="grid grid-2">
+              <section className="card">
+                <h2>Roster</h2>
+                <textarea
+                  value={csv}
+                  onChange={(e) => {
+                    setCsv(e.target.value);
+                    setReport(null);
+                    setParseError("");
+                  }}
+                  placeholder="name,wallet,hours,rate_usd,role"
+                  spellCheck={false}
                 />
-              </div>
-              <div className="row-actions">
-                <button type="button" className="btn" onClick={loadDemo} disabled={!address}>
-                  Load demo roster
-                </button>
-                <button type="button" className="btn btn-primary" onClick={runAgent} disabled={!csv.trim()}>
-                  <Bot size={16} />
-                  Run AI agent
-                </button>
-                <button type="button" className="btn btn-primary" onClick={quickDemo} disabled={!address}>
-                  Quick demo
-                </button>
-              </div>
-            </div>
-
-            <div className="card">
-              <h2>Payroll intelligence agent</h2>
-              <p className="sub">Pre-flight compliance — blocks bad batches before settlement.</p>
-              {!report ? (
-                <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>
-                  Upload payroll and run the agent to see validation results.
-                </p>
-              ) : (
-                <>
-                  <div className="agent-score">
-                    <div
-                      className={`score-ring ${report.approved ? (report.issues.some((i) => i.severity === "warning") ? "warn" : "ok") : "bad"}`}
-                    >
-                      {report.score}
-                    </div>
-                    <div>
-                      <strong>{report.approved ? "Approved" : "Blocked"}</strong>
-                      <p style={{ margin: "0.25rem 0 0", fontSize: "0.82rem", color: "var(--text-muted)" }}>
-                        {report.summary}
-                      </p>
-                    </div>
-                  </div>
-                  {report.issues.map((issue, i) => (
-                    <div key={i} className={`issue ${issue.severity}`}>
-                      {issue.message}
-                    </div>
-                  ))}
-                </>
-              )}
-
-              {rows.length > 0 && (
-                <div className="table-wrap" style={{ marginTop: "1rem" }}>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Worker</th>
-                        <th>Role</th>
-                        <th>Hours</th>
-                        <th>Payout</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rows.map((r) => (
-                        <tr key={`${r.name}-${r.role}`}>
-                          <td>{r.name}</td>
-                          <td>{r.role}</td>
-                          <td>{r.hours}h</td>
-                          <td>${r.amountUsd.toFixed(2)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <p style={{ fontSize: "0.82rem", marginTop: "0.5rem" }}>
-                    Batch total: <strong>${totalDisplay} sUSD</strong>
-                  </p>
+                {parseError && <div className="banner error">{parseError}</div>}
+                <div className="field">
+                  <label htmlFor="shift">Shift period</label>
+                  <input
+                    id="shift"
+                    type="text"
+                    value={shiftPeriod}
+                    onChange={(e) => setShiftPeriod(e.target.value)}
+                  />
                 </div>
-              )}
+                <div className="row-actions">
+                  <button type="button" className="btn" onClick={loadAndValidate} disabled={!address}>
+                    Load sample
+                  </button>
+                  <button type="button" className="btn btn-primary" onClick={runAgent} disabled={!csv.trim()}>
+                    <Bot size={16} />
+                    Validate
+                  </button>
+                </div>
+              </section>
 
-              <div className="row-actions" style={{ marginTop: "1rem" }}>
-                <button type="button" className="btn" onClick={faucet} disabled={busy || !deployed || !address}>
-                  <Coins size={16} />
-                  Faucet sUSD
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={settleBatch}
-                  disabled={busy || !report?.approved || !deployed || wrongNetwork}
-                >
-                  {busy ? <Loader2 size={16} className="spin" /> : <CheckCircle2 size={16} />}
-                  Settle batch
-                </button>
-              </div>
-              {usdcBalance !== undefined && (
-                <p className="status-line">Balance: {formatUnits(usdcBalance, 6)} sUSD</p>
-              )}
+              <section className="card">
+                <h2>Validation</h2>
+                {!report ? (
+                  <p className="muted">Run validation to review payroll before settlement.</p>
+                ) : (
+                  <>
+                    <div className="agent-score">
+                      <div
+                        className={`score-ring ${report.approved ? (report.issues.some((i) => i.severity === "warning") ? "warn" : "ok") : "bad"}`}
+                      >
+                        {report.score}
+                      </div>
+                      <div>
+                        <strong>{report.approved ? "Ready" : "Blocked"}</strong>
+                        <p className="muted">{report.summary}</p>
+                      </div>
+                    </div>
+                    {report.issues.map((issue, i) => (
+                      <div key={i} className={`issue ${issue.severity}`}>
+                        {issue.message}
+                      </div>
+                    ))}
+                  </>
+                )}
+
+                {rows.length > 0 && (
+                  <div className="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Worker</th>
+                          <th>Role</th>
+                          <th>Hrs</th>
+                          <th>Pay</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rows.map((r) => (
+                          <tr key={`${r.name}-${r.role}`}>
+                            <td>{r.name}</td>
+                            <td>{r.role}</td>
+                            <td>{r.hours}</td>
+                            <td>${r.amountUsd.toFixed(2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <p className="total-line">
+                      Total <strong>${totalDisplay}</strong> sUSD
+                    </p>
+                  </div>
+                )}
+
+                <div className="row-actions">
+                  <button type="button" className="btn" onClick={faucet} disabled={busy || !deployed || !address}>
+                    <Coins size={16} />
+                    Get sUSD
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={settleBatch}
+                    disabled={busy || !report?.approved || !deployed || wrongNetwork}
+                  >
+                    {busy ? <Loader2 size={16} className="spin" /> : <CheckCircle2 size={16} />}
+                    Settle
+                  </button>
+                </div>
+                {usdcBalance !== undefined && (
+                  <p className="meta">Balance: {formatUnits(usdcBalance, 6)} sUSD</p>
+                )}
+              </section>
             </div>
-          </div>
+          </>
         )}
 
         {tab === "worker" && (
-          <div className="card">
-            <h2>On-chain wage receipts</h2>
-            <p className="sub">
-              Verifiable payment history for shift workers — auditors and workers share the same
-              source of truth.
-            </p>
-            {!address ? (
-              <p style={{ color: "var(--text-muted)" }}>Connect wallet to view your receipts.</p>
-            ) : !receiptIds?.length ? (
-              <p style={{ color: "var(--text-muted)" }}>
-                No receipts yet. Run a batch from the Employer tab (demo pays your connected wallet).
-              </p>
-            ) : (
-              receiptIds.map((id) => (
-                <ReceiptCard key={id} receiptId={id as Hex} ledger={d.contracts.shiftLedger} />
-              ))
+          <>
+            <header className="page-head">
+              <BrandMark size={48} />
+              <div>
+                <h1>Receipts</h1>
+                <p>On-chain payment history for your wallet.</p>
+              </div>
+            </header>
+
+            <section className="card">
+              {!address ? (
+                <p className="muted">Connect your wallet to view receipts.</p>
+              ) : !receiptIds?.length ? (
+                <p className="muted">No payments yet.</p>
+              ) : (
+                receiptIds.map((id) => (
+                  <ReceiptCard key={id} receiptId={id as Hex} ledger={d.contracts.shiftLedger} />
+                ))
+              )}
+            </section>
+          </>
+        )}
+
+        {(status || lastTx) && (
+          <footer className="status-bar">
+            {status && <span>{status}</span>}
+            {lastTx && (
+              <a href={explorerTx(lastTx)} target="_blank" rel="noreferrer">
+                {shortAddr(lastTx)} <ExternalLink size={12} />
+              </a>
             )}
-          </div>
+          </footer>
         )}
 
-        <p className="status-line">{status}</p>
-        {lastTx && (
-          <p className="status-line">
-            Last tx:{" "}
-            <a href={explorerTx(lastTx)} target="_blank" rel="noreferrer">
-              {shortAddr(lastTx)} <ExternalLink size={12} style={{ verticalAlign: -2 }} />
-            </a>
-          </p>
-        )}
-
-        <footer className="footer">
-          <div className="footer-brand">
-            <img src="/logo.png" alt="" className="footer-logo" aria-hidden="true" />
-            <span className="footer-note">ShiftLedger · Industrial 5.0 × Real-World Finance</span>
-          </div>
-          {deployed && (
+        {deployed && (
+          <div className="footer-links">
             <a href={explorerAddr(d.contracts.shiftLedger)} target="_blank" rel="noreferrer">
-              View contract on Etherscan
+              Contract
             </a>
-          )}
-        </footer>
+            <a href="https://github.com/thesithunyein/shiftledger" target="_blank" rel="noreferrer">
+              GitHub
+            </a>
+          </div>
+        )}
       </main>
     </div>
   );
@@ -402,20 +347,20 @@ function ReceiptCard({ receiptId, ledger }: { receiptId: Hex; ledger: string }) 
   if (!data) return null;
 
   const [, batchId, employer, , amount, shiftPeriod, role, paidAt] = data;
-  const paidDate = new Date(Number(paidAt) * 1000).toLocaleString();
+  const paidDate = new Date(Number(paidAt) * 1000).toLocaleDateString();
 
   return (
-    <div className="receipt">
+    <article className="receipt">
       <div className="receipt-head">
         <div>
           <strong>{role as string}</strong>
-          <div className="receipt-meta">Shift {shiftPeriod as string}</div>
+          <span className="muted">Shift {shiftPeriod as string}</span>
         </div>
-        <div className="receipt-amount">${formatUnits(amount as bigint, 6)}</div>
+        <span className="receipt-amount">${formatUnits(amount as bigint, 6)}</span>
       </div>
-      <div className="receipt-meta">
-        Paid {paidDate} · Employer {shortAddr(employer as string)} · Batch {shortAddr(batchId as string)}
-      </div>
-    </div>
+      <p className="meta">
+        {paidDate} · {shortAddr(employer as string)} · {shortAddr(batchId as string)}
+      </p>
+    </article>
   );
 }

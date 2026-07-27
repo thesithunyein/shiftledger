@@ -1,100 +1,62 @@
 <p align="center">
-  <img src="frontend/public/logo.png" alt="ShiftLedger" width="120" />
+  <img src="frontend/public/logo.svg" alt="ShiftLedger" width="88" />
 </p>
 
 <h1 align="center">ShiftLedger</h1>
 
 <p align="center">
-  <strong>AI-validated stablecoin payroll for industrial shift workers</strong><br/>
-  Upload payroll · AI validates · Batch settle · On-chain receipts
+  Stablecoin payroll for industrial shift workers — validate, batch pay, verify on-chain.
 </p>
 
 <p align="center">
-  <a href="https://shiftledger-nine.vercel.app"><img src="https://img.shields.io/badge/Live-Demo-52A6E2?style=for-the-badge" alt="Live demo" /></a>
-  <a href="https://sepolia.etherscan.io/address/0x5b421eb54218b48c7064605fb957ffef2b6b5f8a"><img src="https://img.shields.io/badge/Sepolia-Contract-627EEA?style=for-the-badge&logo=ethereum&logoColor=white" alt="Sepolia" /></a>
-  <a href="https://www.hackquest.io/hackathons/ChainHack"><img src="https://img.shields.io/badge/ChainHack-2026-6A6D71?style=for-the-badge" alt="ChainHack" /></a>
-</p>
-
-<p align="center">
-  <a href="https://shiftledger-nine.vercel.app">Live app</a> ·
-  <a href="docs/ARCHITECTURE.md">Architecture</a> ·
-  <a href="SUBMISSION.md">Submission copy</a>
+  <a href="https://shiftledger-nine.vercel.app"><strong>Live app</strong></a>
+  ·
+  <a href="https://sepolia.etherscan.io/address/0x5b421eb54218b48c7064605fb957ffef2b6b5f8a">Contract</a>
+  ·
+  <a href="docs/ARCHITECTURE.md">Architecture</a>
 </p>
 
 ---
 
-## What it is
+## Overview
 
-**ShiftLedger** helps factory payroll clerks pay shift workers in stablecoin with an **AI pre-flight check** and **on-chain wage receipts**.
+ShiftLedger lets employers upload a shift payroll roster, run automated validation, and settle wages in stablecoin with on-chain receipts for each worker.
 
-| Step | Who | Action |
-|------|-----|--------|
-| 1 | Employer | Upload shift payroll CSV |
-| 2 | AI agent | Validate hours, rates, wallets |
-| 3 | Employer | Batch-settle sUSD on Sepolia |
-| 4 | Worker | View verifiable payment receipts |
-
-Built for **[ChainHack 2026](https://www.hackquest.io/hackathons/ChainHack)** — Industrial 5.0 × AI × Web3.
+```
+CSV roster → validation → batch settlement → worker receipts
+```
 
 ---
 
-## Why judges care
+## Demo
 
-- **Industrial 5.0** — shift workers in manufacturing/logistics, not generic freelancer wallets
-- **AI × Web3** — agent blocks bad payroll *before* on-chain settlement
-- **Real-World Finance** — stablecoin batch pay + immutable audit trail
-- **SEA relevance** — same week as BPI stablecoin payroll pilots (Jul 2026)
-
----
-
-## Try it (3 min demo)
-
-1. Open **[shiftledger-nine.vercel.app](https://shiftledger-nine.vercel.app)** (or `npm run dev`)
-2. Connect wallet on **Ethereum Sepolia**
-3. **Quick demo** → AI flags overtime row → **Faucet sUSD** → **Settle batch**
-4. **Worker receipts** tab → on-chain payment history
+1. Open [shiftledger-nine.vercel.app](https://shiftledger-nine.vercel.app)
+2. Connect a Sepolia wallet
+3. **Load sample** → **Validate** → **Get sUSD** → **Settle**
+4. Switch to **Receipts** to view payment history
 
 ---
 
-## Sepolia contracts
+## Contracts (Sepolia)
 
-| Contract | Address |
-|----------|---------|
-| ShiftLedger | [`0x5b42…5f8a`](https://sepolia.etherscan.io/address/0x5b421eb54218b48c7064605fb957ffef2b6b5f8a) |
-| MockUSDC (sUSD) | [`0x4c48…76d6`](https://sepolia.etherscan.io/address/0x4c485e4028041e9b27ee65efcfe1cd74f0ca76d6) |
-
----
-
-## Stack
-
-| Layer | Tech |
-|-------|------|
-| Contracts | Hardhat 3 · Solidity · OpenZeppelin |
-| Stablecoin | MockUSDC (sUSD) on Sepolia |
-| App | Vite · React · wagmi · viem |
-| AI agent | Payroll intelligence engine (LLM-ready) |
+| | Address |
+|---|---|
+| ShiftLedger | [`0x5b421eb54218b48c7064605fb957ffef2b6b5f8a`](https://sepolia.etherscan.io/address/0x5b421eb54218b48c7064605fb957ffef2b6b5f8a) |
+| sUSD | [`0x4c485e4028041e9b27ee65efcfe1cd74f0ca76d6`](https://sepolia.etherscan.io/address/0x4c485e4028041e9b27ee65efcfe1cd74f0ca76d6) |
 
 ---
 
-## Setup
+## Development
 
 ```bash
 git clone https://github.com/thesithunyein/shiftledger.git
 cd shiftledger
 npm run install:all
-cp .env.example .env   # PRIVATE_KEY + SEPOLIA_RPC_URL
+cp .env.example .env
 npm run compile
-npm run deploy:sepolia   # skip if using bundled addresses
+npm run deploy:sepolia
 npm run dev
 ```
-
-Vercel root directory: `frontend`
-
----
-
-## Pitch (30 sec)
-
-> Factories pay shift workers weekly through slow banks — workers have no proof, HR reconciles manually. ShiftLedger: upload payroll, AI validates anomalies, one-click stablecoin batch, workers get on-chain receipts. Built for Industrial 5.0 in Southeast Asia.
 
 ---
 
