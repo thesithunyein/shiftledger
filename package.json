@@ -1,0 +1,14 @@
+{
+  "name": "shiftledger",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Industrial shift payroll — AI validation + stablecoin batch settlement",
+  "scripts": {
+    "install:all": "npm install --prefix contracts && npm install --prefix frontend",
+    "compile": "npm run compile --prefix contracts",
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "deploy:sepolia": "npm run deploy:sepolia --prefix contracts"
+  },
+  "license": "MIT"
+}

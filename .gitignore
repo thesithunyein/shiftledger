@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.cache/
+.env
+.env.local
+contracts/cache/
+contracts/artifacts/
+contracts/typechain-types/
+contracts/deployments/sepolia.json
+*.log

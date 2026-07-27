@@ -1,0 +1,10 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "deployedAt": "2026-07-27T12:00:00.000Z",
+  "deployer": "0x263951277a5f05eb84976049cb6ff6d48facd270",
+  "contracts": {
+    "mockUsdc": "0x4c485e4028041e9b27ee65efcfe1cd74f0ca76d6",
+    "shiftLedger": "0x5b421eb54218b48c7064605fb957ffef2b6b5f8a"
+  }
+}
