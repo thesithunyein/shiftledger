@@ -162,12 +162,12 @@ export function App() {
       });
       setLastTx(settleHash);
       if (publicClient) await publicClient.waitForTransactionReceipt({ hash: settleHash });
-      setDemoStep(3);
-      setStatus("Payroll settled — view worker receipts.");
+      setDemoStep(4);
+      setStatus("Payroll settled — on-chain receipt ready.");
       await refetchReceipts();
       setTab("worker");
     } catch (e) {
-      setStatus(e instanceof Error ? e.message : "Demo failed");
+      setStatus(e instanceof Error ? e.message : "Payroll flow failed");
     } finally {
       setBusy(false);
     }
@@ -251,6 +251,12 @@ export function App() {
           <div className="banner error">Switch to Ethereum Sepolia.</div>
         )}
 
+        {!isConnected && (
+          <div className="banner info">
+            Connect an <strong>Ethereum Sepolia</strong> wallet, then click <strong>Run payroll flow</strong>.
+          </div>
+        )}
+
         {tab === "employer" && (
           <>
             <header className="page-head">
@@ -281,7 +287,7 @@ export function App() {
               <li className={demoStep >= 1 ? "done" : ""}>Validate roster</li>
               <li className={demoStep >= 2 ? "done" : ""}>Fund sUSD</li>
               <li className={demoStep >= 3 ? "done" : ""}>Settle batch</li>
-              <li className={receiptIds?.length ? "done" : ""}>Worker receipts</li>
+              <li className={demoStep >= 4 || receiptIds?.length ? "done" : ""}>Worker receipts</li>
             </ol>
 
             <div className="grid grid-2">
@@ -349,6 +355,15 @@ export function App() {
                         )}
                       </div>
                     </div>
+                    {report.issues.length > 0 && (
+                      <div className="issue-list">
+                        {report.issues.map((issue, i) => (
+                          <div key={i} className={`issue ${issue.severity}`}>
+                            {issue.message}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     {insight && (
                       <ol className="agent-steps">
                         {insight.steps.map((step) => (
@@ -373,11 +388,6 @@ export function App() {
                         </li>
                       ))}
                     </ul>
-                    {report.issues.map((issue, i) => (
-                      <div key={i} className={`issue ${issue.severity}`}>
-                        {issue.message}
-                      </div>
-                    ))}
                   </>
                 ) : null}
 
@@ -438,7 +448,7 @@ export function App() {
               <BrandMark size={48} />
               <div>
                 <h1>Receipts</h1>
-                <p>On-chain payment history for your wallet.</p>
+                <p>Immutable wage receipts — verified on Ethereum Sepolia.</p>
               </div>
             </header>
 
@@ -446,11 +456,14 @@ export function App() {
               {!address ? (
                 <p className="muted">Connect your wallet to view receipts.</p>
               ) : !receiptIds?.length ? (
-                <p className="muted">No payments yet.</p>
+                <p className="muted">No payments yet. Run payroll to generate a receipt.</p>
               ) : (
-                receiptIds.map((id) => (
-                  <ReceiptCard key={id} receiptId={id as Hex} ledger={d.contracts.shiftLedger} />
-                ))
+                <>
+                  <p className="receipt-count">{receiptIds.length} on-chain receipt{receiptIds.length > 1 ? "s" : ""}</p>
+                  {receiptIds.map((id) => (
+                    <ReceiptCard key={id} receiptId={id as Hex} ledger={d.contracts.shiftLedger} />
+                  ))}
+                </>
               )}
             </section>
           </>
@@ -492,21 +505,28 @@ function ReceiptCard({ receiptId, ledger }: { receiptId: Hex; ledger: string }) 
 
   if (!data) return null;
 
-  const [, batchId, employer, , amount, shiftPeriod, role, paidAt] = data;
+  const [, , employer, , amount, shiftPeriod, role, paidAt] = data;
   const paidDate = new Date(Number(paidAt) * 1000).toLocaleDateString();
 
   return (
     <article className="receipt">
       <div className="receipt-head">
         <div>
+          <div className="receipt-verified">
+            <CheckCircle2 size={14} />
+            On-chain verified
+          </div>
           <strong>{role as string}</strong>
           <span className="muted">Shift {shiftPeriod as string}</span>
         </div>
         <span className="receipt-amount">${formatUnits(amount as bigint, 6)}</span>
       </div>
       <p className="meta">
-        {paidDate} · {shortAddr(employer as string)} · {shortAddr(batchId as string)}
+        Paid {paidDate} · Employer {shortAddr(employer as string)}
       </p>
+      <a className="receipt-link" href={explorerAddr(ledger)} target="_blank" rel="noreferrer">
+        View contract <ExternalLink size={12} />
+      </a>
     </article>
   );
 }

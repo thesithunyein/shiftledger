@@ -25,6 +25,8 @@ export function SiteBar({
           <span className="sitebar-title">ShiftLedger</span>
         </a>
 
+        <span className="sitebar-pill">Sepolia</span>
+
         <nav className="sitebar-nav" aria-label="Main">
           <button
             type="button"

@@ -108,6 +108,19 @@ a:hover {
   gap: 0.25rem;
 }
 
+.sitebar-pill {
+  margin-left: 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  color: var(--sl-blue);
+  background: rgba(82, 166, 226, 0.12);
+  border: 1px solid rgba(82, 166, 226, 0.35);
+}
+
 .sitebar-link {
   padding: 0.45rem 0.85rem;
   border: none;
@@ -582,6 +595,43 @@ th {
   background: rgba(232, 93, 106, 0.1);
   border-color: rgba(232, 93, 106, 0.35);
   color: #f0a0a8;
+}
+
+.banner.info {
+  background: rgba(82, 166, 226, 0.1);
+  border-color: rgba(82, 166, 226, 0.35);
+  color: var(--text);
+}
+
+.issue-list {
+  margin-bottom: 0.75rem;
+}
+
+.receipt-count {
+  margin: 0 0 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sl-blue);
+}
+
+.receipt-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--green);
+  margin-bottom: 0.25rem;
+}
+
+.receipt-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  margin-top: 0.35rem;
 }
 
 .status-bar {

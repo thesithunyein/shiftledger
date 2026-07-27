@@ -37,15 +37,15 @@ export type AgentReport = {
 
 const CSV_HEADER = "name,wallet,hours,rate_usd,role";
 
-/** Demo roster — KL factory shift, Week 30. Siti flagged for 52h overtime. */
-export function demoCsv(wallet?: string): string {
-  const w = wallet ?? "0x0000000000000000000000000000000000000000";
+/** Demo roster — KL factory, Week 30. Siti flagged for 52h overtime. */
+export function demoCsv(viewerWallet?: string): string {
+  const you = viewerWallet ?? "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
   return `${CSV_HEADER}
-Aung Min,${w},48,4.50,Line Operator
-Siti Rahman,${w},52,5.00,QC Inspector
-Raj Kumar,${w},44,4.75,Packaging Lead
-Nurul Izza,${w},40,4.25,Logistics Handler
-Tan Wei Ming,${w},36,6.00,Shift Supervisor`;
+Aung Min,${you},48,4.50,Line Operator
+Siti Rahman,0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC,52,5.00,QC Inspector
+Raj Kumar,0x90F79bf6EB2c4f870365E785982E1f101E93b906,44,4.75,Packaging Lead
+Nurul Izza,0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65,40,4.25,Logistics Handler
+Tan Wei Ming,0x9965507D1a55bcC2695C58ba16EB3d46B0D6F814,36,6.00,Shift Supervisor`;
 }
 
 export function parsePayrollCsv(text: string): PayrollRow[] {
