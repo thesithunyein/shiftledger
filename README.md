@@ -75,8 +75,9 @@ Full notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 1. Open **[shiftledger-nine.vercel.app](https://shiftledger-nine.vercel.app)**
 2. Connect wallet on **Ethereum Sepolia**
-3. **Load sample** → **Validate** → **Get sUSD** → **Settle**
-4. Open **Receipts** — on-chain payment history
+3. Click **Run payroll flow** (or Load sample → Validate)
+4. Review **Payroll Intelligence Agent** — policy checks + reasoning trace
+5. **Get sUSD** → **Settle** → open **Receipts** for on-chain proof
 
 ---
 

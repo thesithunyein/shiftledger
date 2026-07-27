@@ -275,6 +275,66 @@ a:hover {
   color: var(--red);
 }
 
+.agent-analyzing {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  color: var(--sl-blue);
+}
+
+.agent-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  font-size: 0.78rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.agent-steps li {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.agent-steps li:last-child {
+  border-bottom: none;
+}
+
+.agent-steps li.done .step-label {
+  color: var(--green);
+}
+
+.agent-steps li.warn .step-label {
+  color: var(--warn);
+}
+
+.agent-steps li.fail .step-label {
+  color: var(--red);
+}
+
+.agent-rec {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  background: rgba(82, 166, 226, 0.1);
+  border: 1px solid rgba(82, 166, 226, 0.25);
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.agent-rec p {
+  margin: 0;
+}
+
 .muted {
   margin: 0;
   font-size: 0.875rem;

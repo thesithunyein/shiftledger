@@ -20,6 +20,7 @@ import {
   type AgentReport,
   type PayrollRow,
 } from "./lib/payrollAgent";
+import { AGENT_ANALYSIS_MS, buildAgentInsight, type AgentInsight } from "./lib/agentInsight";
 
 type Tab = "employer" | "worker";
 const SEPOLIA = 11155111;
@@ -44,6 +45,8 @@ export function App() {
   const [lastTx, setLastTx] = useState("");
 
   const [demoStep, setDemoStep] = useState(0);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [insight, setInsight] = useState<AgentInsight | null>(null);
 
   useEffect(() => {
     document.title = "ShiftLedger";
@@ -67,36 +70,56 @@ export function App() {
     query: { enabled: deployed && Boolean(address) },
   });
 
-  const runAgent = useCallback(() => {
+  const applyAgentReport = useCallback((parsed: PayrollRow[], agentReport: AgentReport) => {
+    setRows(parsed);
+    setReport(agentReport);
+    setInsight(buildAgentInsight(parsed, agentReport));
+  }, []);
+
+  const runAgent = useCallback(async () => {
     try {
       const parsed = parsePayrollCsv(csv);
-      setRows(parsed);
       setParseError("");
-      setReport(runPayrollAgent(parsed));
+      setAnalyzing(true);
+      setInsight(null);
+      setReport(null);
+      await new Promise((r) => setTimeout(r, AGENT_ANALYSIS_MS));
+      const agentReport = runPayrollAgent(parsed);
+      applyAgentReport(parsed, agentReport);
+      setDemoStep(1);
     } catch (e) {
       setParseError(e instanceof Error ? e.message : "Invalid CSV");
       setReport(null);
+      setInsight(null);
       setRows([]);
+    } finally {
+      setAnalyzing(false);
     }
-  }, [csv]);
+  }, [applyAgentReport, csv]);
 
-  const loadAndValidate = useCallback(() => {
+  const loadAndValidate = useCallback(async () => {
     if (!address) return;
     const demo = demoCsv(address);
     setCsv(demo);
     setParseError("");
+    setAnalyzing(true);
+    setInsight(null);
+    setReport(null);
+    await new Promise((r) => setTimeout(r, AGENT_ANALYSIS_MS));
     const parsed = parsePayrollCsv(demo);
-    setRows(parsed);
-    setReport(runPayrollAgent(parsed));
+    const agentReport = runPayrollAgent(parsed);
+    applyAgentReport(parsed, agentReport);
     setDemoStep(1);
-    setStatus("Sample loaded · validation complete.");
-  }, [address]);
+    setStatus("Sample loaded · agent analysis complete.");
+    setAnalyzing(false);
+  }, [address, applyAgentReport]);
 
   async function runQuickStart() {
     if (!address || !deployed) return;
-    loadAndValidate();
     setBusy(true);
     try {
+      await loadAndValidate();
+
       setStatus("Minting sUSD…");
       const faucetHash = await writeContractAsync({
         address: d.contracts.mockUsdc as `0x${string}`,
@@ -111,6 +134,7 @@ export function App() {
       const demo = demoCsv(address);
       const parsed = parsePayrollCsv(demo);
       const agentReport = runPayrollAgent(parsed);
+      applyAgentReport(parsed, agentReport);
       if (!agentReport.approved) {
         setStatus("Validation blocked — fix roster first.");
         return;
@@ -139,8 +163,9 @@ export function App() {
       setLastTx(settleHash);
       if (publicClient) await publicClient.waitForTransactionReceipt({ hash: settleHash });
       setDemoStep(3);
-      setStatus("Demo complete — open Receipts tab.");
-      refetchReceipts();
+      setStatus("Payroll settled — view worker receipts.");
+      await refetchReceipts();
+      setTab("worker");
     } catch (e) {
       setStatus(e instanceof Error ? e.message : "Demo failed");
     } finally {
@@ -267,6 +292,7 @@ export function App() {
                   onChange={(e) => {
                     setCsv(e.target.value);
                     setReport(null);
+                    setInsight(null);
                     setParseError("");
                   }}
                   placeholder="name,wallet,hours,rate_usd,role"
@@ -283,12 +309,12 @@ export function App() {
                   />
                 </div>
                 <div className="row-actions">
-                  <button type="button" className="btn" onClick={loadAndValidate} disabled={!address}>
+                  <button type="button" className="btn" onClick={loadAndValidate} disabled={!address || analyzing}>
                     Load sample
                   </button>
-                  <button type="button" className="btn btn-primary" onClick={runAgent} disabled={!csv.trim()}>
+                  <button type="button" className="btn btn-primary" onClick={runAgent} disabled={!csv.trim() || analyzing}>
                     <Bot size={16} />
-                    Validate
+                    {analyzing ? "Analyzing…" : "Validate"}
                   </button>
                 </div>
               </section>
@@ -297,9 +323,17 @@ export function App() {
                 <h2>
                   <ShieldCheck size={14} /> Payroll Intelligence Agent
                 </h2>
-                {!report ? (
+                {!report && !analyzing ? (
                   <p className="muted">Run validation to review payroll before settlement.</p>
-                ) : (
+                ) : analyzing ? (
+                  <div className="agent-analyzing">
+                    <Loader2 size={20} className="spin" />
+                    <div>
+                      <strong>Agent analyzing roster…</strong>
+                      <p className="muted">Policy scan · wallet check · compliance rules</p>
+                    </div>
+                  </div>
+                ) : report ? (
                   <>
                     <div className="agent-score">
                       <div
@@ -310,8 +344,27 @@ export function App() {
                       <div>
                         <strong>{report.approved ? "Ready to settle" : "Blocked"}</strong>
                         <p className="muted">{report.summary}</p>
+                        {insight && (
+                          <p className="meta">Confidence {insight.confidence}% · {new Date(report.analyzedAt).toLocaleTimeString()}</p>
+                        )}
                       </div>
                     </div>
+                    {insight && (
+                      <ol className="agent-steps">
+                        {insight.steps.map((step) => (
+                          <li key={step.id} className={step.status}>
+                            <span className="step-label">{step.label}</span>
+                            <span className="muted">{step.detail}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                    {insight && (
+                      <div className="agent-rec">
+                        <Bot size={14} />
+                        <p>{insight.recommendation}</p>
+                      </div>
+                    )}
                     <ul className="policy-list">
                       {report.policyChecks.map((c) => (
                         <li key={c.id} className={c.passed ? "pass" : "fail"}>
@@ -326,7 +379,7 @@ export function App() {
                       </div>
                     ))}
                   </>
-                )}
+                ) : null}
 
                 {rows.length > 0 && (
                   <div className="table-wrap">
