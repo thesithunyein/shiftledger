@@ -8,7 +8,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { formatUnits, parseUnits, type Hex } from "viem";
-import { Bot, CheckCircle2, Coins, ExternalLink, Loader2 } from "lucide-react";
+import { Bot, CheckCircle2, Coins, ExternalLink, Loader2, Play, ShieldCheck } from "lucide-react";
 import { BrandMark } from "./components/BrandMark";
 import { SiteBar } from "./components/SiteBar";
 import { erc20Abi, shiftLedgerAbi } from "./lib/abis";
@@ -42,6 +42,8 @@ export function App() {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
   const [lastTx, setLastTx] = useState("");
+
+  const [demoStep, setDemoStep] = useState(0);
 
   useEffect(() => {
     document.title = "ShiftLedger";
@@ -86,7 +88,65 @@ export function App() {
     const parsed = parsePayrollCsv(demo);
     setRows(parsed);
     setReport(runPayrollAgent(parsed));
+    setDemoStep(1);
+    setStatus("Sample loaded · validation complete.");
   }, [address]);
+
+  async function runQuickStart() {
+    if (!address || !deployed) return;
+    loadAndValidate();
+    setBusy(true);
+    try {
+      setStatus("Minting sUSD…");
+      const faucetHash = await writeContractAsync({
+        address: d.contracts.mockUsdc as `0x${string}`,
+        abi: erc20Abi,
+        functionName: "faucet",
+        args: [parseUnits("10000", 6)],
+      });
+      setLastTx(faucetHash);
+      if (publicClient) await publicClient.waitForTransactionReceipt({ hash: faucetHash });
+      setDemoStep(2);
+
+      const demo = demoCsv(address);
+      const parsed = parsePayrollCsv(demo);
+      const agentReport = runPayrollAgent(parsed);
+      if (!agentReport.approved) {
+        setStatus("Validation blocked — fix roster first.");
+        return;
+      }
+
+      const total = parseUnits(agentReport.totalUsd.toFixed(2), 6);
+      const workers = parsed.map((r) => r.wallet as `0x${string}`);
+      const amounts = parsed.map((r) => parseUnits(r.amountUsd.toFixed(2), 6));
+      const roles = parsed.map((r) => r.role);
+
+      setStatus("Settling on-chain…");
+      const approveHash = await writeContractAsync({
+        address: d.contracts.mockUsdc as `0x${string}`,
+        abi: erc20Abi,
+        functionName: "approve",
+        args: [d.contracts.shiftLedger as `0x${string}`, total],
+      });
+      if (publicClient) await publicClient.waitForTransactionReceipt({ hash: approveHash });
+
+      const settleHash = await writeContractAsync({
+        address: d.contracts.shiftLedger as `0x${string}`,
+        abi: shiftLedgerAbi,
+        functionName: "settleBatch",
+        args: [workers, amounts, roles, shiftPeriod, agentReport.payrollHash],
+      });
+      setLastTx(settleHash);
+      if (publicClient) await publicClient.waitForTransactionReceipt({ hash: settleHash });
+      setDemoStep(3);
+      setStatus("Demo complete — open Receipts tab.");
+      refetchReceipts();
+    } catch (e) {
+      setStatus(e instanceof Error ? e.message : "Demo failed");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   const totalDisplay = useMemo(() => {
     if (report) return report.totalUsd.toFixed(2);
@@ -172,9 +232,32 @@ export function App() {
               <BrandMark size={48} />
               <div>
                 <h1>Batch payroll</h1>
-                <p>Upload shift roster, validate, and settle in one transaction.</p>
+                <p>Industrial shift wages — AI-validated, stablecoin-settled, receipt-verified.</p>
               </div>
             </header>
+
+            <div className="demo-bar">
+              <div>
+                <strong>Quick start</strong>
+                <p className="muted">Load → Validate → Settle → Receipts</p>
+              </div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={runQuickStart}
+                disabled={busy || !address || !deployed || wrongNetwork}
+              >
+                {busy ? <Loader2 size={16} className="spin" /> : <Play size={16} />}
+                Run payroll flow
+              </button>
+            </div>
+
+            <ol className="demo-steps">
+              <li className={demoStep >= 1 ? "done" : ""}>Validate roster</li>
+              <li className={demoStep >= 2 ? "done" : ""}>Fund sUSD</li>
+              <li className={demoStep >= 3 ? "done" : ""}>Settle batch</li>
+              <li className={receiptIds?.length ? "done" : ""}>Worker receipts</li>
+            </ol>
 
             <div className="grid grid-2">
               <section className="card">
@@ -211,7 +294,9 @@ export function App() {
               </section>
 
               <section className="card">
-                <h2>Validation</h2>
+                <h2>
+                  <ShieldCheck size={14} /> Payroll Intelligence Agent
+                </h2>
                 {!report ? (
                   <p className="muted">Run validation to review payroll before settlement.</p>
                 ) : (
@@ -223,10 +308,18 @@ export function App() {
                         {report.score}
                       </div>
                       <div>
-                        <strong>{report.approved ? "Ready" : "Blocked"}</strong>
+                        <strong>{report.approved ? "Ready to settle" : "Blocked"}</strong>
                         <p className="muted">{report.summary}</p>
                       </div>
                     </div>
+                    <ul className="policy-list">
+                      {report.policyChecks.map((c) => (
+                        <li key={c.id} className={c.passed ? "pass" : "fail"}>
+                          <span>{c.label}</span>
+                          <span className="muted">{c.detail}</span>
+                        </li>
+                      ))}
+                    </ul>
                     {report.issues.map((issue, i) => (
                       <div key={i} className={`issue ${issue.severity}`}>
                         {issue.message}

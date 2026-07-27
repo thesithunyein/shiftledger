@@ -12,7 +12,6 @@
 <p align="center">
   <a href="https://shiftledger-nine.vercel.app"><img src="https://img.shields.io/badge/Live-App-52A6E2?style=for-the-badge&logo=vercel&logoColor=white" alt="Live app" /></a>
   <a href="https://sepolia.etherscan.io/address/0x5b421eb54218b48c7064605fb957ffef2b6b5f8a"><img src="https://img.shields.io/badge/ETH-Sepolia-627EEA?style=for-the-badge&logo=ethereum&logoColor=white" alt="Sepolia" /></a>
-  <a href="https://www.hackquest.io/hackathons/ChainHack"><img src="https://img.shields.io/badge/ChainHack-2026-6A6D71?style=for-the-badge&logo=shield&logoColor=white" alt="ChainHack" /></a>
   <a href="#license"><img src="https://img.shields.io/badge/License-MIT-4ecf9a?style=for-the-badge&logo=shield&logoColor=white" alt="MIT" /></a>
 </p>
 
@@ -116,6 +115,22 @@ npm run dev
 Vercel root directory: `frontend`
 
 ---
+
+## Roadmap
+
+| Phase | Deliverable |
+|-------|---------------|
+| Now | Sepolia demo, batch settle, on-chain receipts |
+| Next | MYR/PHP off-ramp via regulated partners (BSP sandbox) |
+| Next | HRIS CSV export + auditor dashboard |
+| Next | Cloud LLM agent (Google Cloud / AWS Lambda) |
+
+## Limitations (honest)
+
+- Testnet only (Sepolia) with mock sUSD
+- Payroll agent uses policy rules today — LLM API-ready architecture
+- Single-employer demo; multi-factory admin planned
+- Workers need a wallet (social recovery / AA planned)
 
 ## License
 

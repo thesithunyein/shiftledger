@@ -16,11 +16,19 @@ export type ValidationIssue = {
   message: string;
 };
 
+export type PolicyCheck = {
+  id: string;
+  label: string;
+  passed: boolean;
+  detail: string;
+};
+
 export type AgentReport = {
   score: number;
   approved: boolean;
   summary: string;
   issues: ValidationIssue[];
+  policyChecks: PolicyCheck[];
   totalUsd: number;
   workerCount: number;
   payrollHash: `0x${string}`;
@@ -29,6 +37,7 @@ export type AgentReport = {
 
 const CSV_HEADER = "name,wallet,hours,rate_usd,role";
 
+/** Demo roster — KL factory shift, Week 30. Siti flagged for 52h overtime. */
 export function demoCsv(wallet?: string): string {
   const w = wallet ?? "0x0000000000000000000000000000000000000000";
   return `${CSV_HEADER}
@@ -72,22 +81,26 @@ function hashPayroll(rows: PayrollRow[]): `0x${string}` {
   return keccak256(toHex(payload));
 }
 
-/// AI-assisted payroll validation — deterministic rules engine (LLM-ready API shape).
+/** Payroll Intelligence Agent — policy engine for Industrial 5.0 shift payroll (LLM API-ready). */
 export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
   const issues: ValidationIssue[] = [];
   const wallets = new Map<string, number>();
   let totalUsd = 0;
+  let invalidWallets = 0;
+  let overtimeRows = 0;
+  let rateAnomalies = 0;
 
   rows.forEach((row, idx) => {
     const rowNum = idx + 1;
     totalUsd += row.amountUsd;
 
     if (!isAddress(row.wallet)) {
+      invalidWallets++;
       issues.push({
         severity: "error",
         row: rowNum,
         field: "wallet",
-        message: `${row.name}: invalid wallet address`,
+        message: `${row.name}: invalid wallet — worker cannot receive on-chain receipt`,
       });
     } else {
       wallets.set(row.wallet.toLowerCase(), (wallets.get(row.wallet.toLowerCase()) ?? 0) + 1);
@@ -98,23 +111,25 @@ export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
         severity: "error",
         row: rowNum,
         field: "hours",
-        message: `${row.name}: hours ${row.hours} outside allowed range (1–80)`,
+        message: `${row.name}: ${row.hours}h outside policy (1–80h/week)`,
       });
-    } else if (row.hours > 60) {
+    } else if (row.hours > 48) {
+      overtimeRows++;
       issues.push({
         severity: "warning",
         row: rowNum,
         field: "hours",
-        message: `${row.name}: ${row.hours}h exceeds typical shift — flagged for HR review`,
+        message: `${row.name}: ${row.hours}h exceeds standard shift — HR review recommended (Industrial 5.0 compliance)`,
       });
     }
 
     if (row.rateUsd < 3 || row.rateUsd > 25) {
+      rateAnomalies++;
       issues.push({
         severity: "warning",
         row: rowNum,
         field: "rate_usd",
-        message: `${row.name}: rate $${row.rateUsd}/hr unusual for SEA manufacturing band`,
+        message: `${row.name}: $${row.rateUsd}/hr outside SEA manufacturing wage band`,
       });
     }
 
@@ -122,30 +137,54 @@ export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
       issues.push({
         severity: "warning",
         row: rowNum,
-        message: `${row.name}: weekly payout $${row.amountUsd.toFixed(2)} exceeds auto-approve threshold`,
-      });
-    }
-  });
-
-  wallets.forEach((count, wallet) => {
-    if (count > 1) {
-      issues.push({
-        severity: "info",
-        message: `Wallet ${wallet.slice(0, 10)}… appears ${count}× in batch (valid for multi-role workers)`,
+        message: `${row.name}: $${row.amountUsd.toFixed(2)} exceeds auto-approve threshold ($500)`,
       });
     }
   });
 
   if (rows.length === 0) {
-    issues.push({ severity: "error", message: "Payroll batch is empty" });
+    issues.push({ severity: "error", message: "Empty payroll batch" });
   }
 
   if (totalUsd > 10_000) {
     issues.push({
       severity: "error",
-      message: `Batch total $${totalUsd.toFixed(2)} exceeds demo limit ($10,000)`,
+      message: `Batch total $${totalUsd.toFixed(2)} exceeds demo ceiling ($10,000)`,
     });
   }
+
+  const policyChecks: PolicyCheck[] = [
+    {
+      id: "wallets",
+      label: "Worker wallet validity",
+      passed: invalidWallets === 0 && rows.length > 0,
+      detail: invalidWallets === 0 ? `${rows.length} valid addresses` : `${invalidWallets} invalid`,
+    },
+    {
+      id: "hours",
+      label: "Shift hour compliance",
+      passed: !issues.some((i) => i.field === "hours" && i.severity === "error"),
+      detail: overtimeRows > 0 ? `${overtimeRows} overtime flag(s)` : "Within limits",
+    },
+    {
+      id: "rates",
+      label: "SEA wage band check",
+      passed: rateAnomalies === 0,
+      detail: rateAnomalies === 0 ? "Rates normal" : `${rateAnomalies} anomaly(s)`,
+    },
+    {
+      id: "batch",
+      label: "Batch total & roster size",
+      passed: rows.length > 0 && totalUsd <= 10_000,
+      detail: `$${totalUsd.toFixed(2)} · ${rows.length} workers`,
+    },
+    {
+      id: "hash",
+      label: "Payroll integrity hash",
+      passed: rows.length > 0,
+      detail: "Bound to on-chain settlement",
+    },
+  ];
 
   const errors = issues.filter((i) => i.severity === "error").length;
   const warnings = issues.filter((i) => i.severity === "warning").length;
@@ -154,11 +193,11 @@ export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
 
   let summary: string;
   if (!approved) {
-    summary = `Agent blocked settlement: ${errors} critical issue(s) require fixes before on-chain batch.`;
+    summary = `Blocked: ${errors} critical issue(s). Fix roster before stablecoin settlement.`;
   } else if (warnings > 0) {
-    summary = `Agent approved with ${warnings} warning(s). Payroll is within policy; HR may review flagged rows.`;
+    summary = `Approved with ${warnings} review flag(s). Safe to settle — HR should verify overtime rows.`;
   } else {
-    summary = "Agent approved: payroll passes compliance checks. Ready for stablecoin batch settlement.";
+    summary = "Approved. Payroll passes all policy checks. Ready for batch settlement.";
   }
 
   return {
@@ -166,6 +205,7 @@ export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
     approved,
     summary,
     issues,
+    policyChecks,
     totalUsd,
     workerCount: rows.length,
     payrollHash: hashPayroll(rows),

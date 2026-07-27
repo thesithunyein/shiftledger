@@ -8,3 +8,9 @@ contracts/artifacts/
 contracts/typechain-types/
 contracts/deployments/sepolia.json
 *.log
+
+# Local-only (hackathon / internal — not for public repo)
+SUBMISSION.md
+PLAN.md
+docs/DEMO_VIDEO.md
+local/
