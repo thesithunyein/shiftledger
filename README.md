@@ -10,13 +10,13 @@
 </p>
 
 <p align="center">
-  <a href="https://shiftledger-nine.vercel.app"><img src="https://img.shields.io/badge/Live-App-52A6E2?style=for-the-badge&logo=vercel&logoColor=white" alt="Live app" /></a>
+  <a href="https://shiftledger-pay.vercel.app"><img src="https://img.shields.io/badge/Live-App-52A6E2?style=for-the-badge&logo=vercel&logoColor=white" alt="Live app" /></a>
   <a href="https://sepolia.etherscan.io/address/0x5b421eb54218b48c7064605fb957ffef2b6b5f8a"><img src="https://img.shields.io/badge/ETH-Sepolia-627EEA?style=for-the-badge&logo=ethereum&logoColor=white" alt="Sepolia" /></a>
   <a href="#license"><img src="https://img.shields.io/badge/License-MIT-4ecf9a?style=for-the-badge&logo=shield&logoColor=white" alt="MIT" /></a>
 </p>
 
 <p align="center">
-  <a href="https://shiftledger-nine.vercel.app">Live app</a> ·
+  <a href="https://shiftledger-pay.vercel.app">Live app</a> ·
   <a href="https://github.com/thesithunyein/shiftledger">GitHub</a> ·
   <a href="docs/ARCHITECTURE.md">Architecture</a>
 </p>
@@ -73,7 +73,7 @@ Full notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 ## Try it
 
-1. Open **[shiftledger-nine.vercel.app](https://shiftledger-nine.vercel.app)**
+1. Open **[shiftledger-pay.vercel.app](https://shiftledger-pay.vercel.app)**
 2. Connect wallet on **Ethereum Sepolia**
 3. Click **Run payroll flow** (or Load sample → Validate)
 4. Review **Payroll Intelligence Agent** — policy checks + reasoning trace
