@@ -54,7 +54,7 @@ CSV payroll → AI agent validation → stablecoin batch settlement → worker r
 - TypeScript payroll intelligence agent
 
 ## Links (fill after deploy)
-- **Live demo:** `https://shiftledger.vercel.app` (or your Vercel URL)
+- **Live demo:** `https://shiftledger-nine.vercel.app`
 - **GitHub:** `https://github.com/thesithunyein/shiftledger`
 - **Contract (Sepolia):** see README
 

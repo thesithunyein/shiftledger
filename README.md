@@ -4,13 +4,13 @@
 </p>
 
 <p align="center">
-  <a href="https://shiftledger.vercel.app"><img src="https://img.shields.io/badge/Live-Demo-f5a623?style=for-the-badge" alt="Live demo" /></a>
+  <a href="https://shiftledger-nine.vercel.app"><img src="https://img.shields.io/badge/Live-Demo-f5a623?style=for-the-badge" alt="Live demo" /></a>
   <a href="https://sepolia.etherscan.io/address/0x5b421eb54218b48c7064605fb957ffef2b6b5f8a"><img src="https://img.shields.io/badge/Sepolia-Contract-627EEA?style=for-the-badge&logo=ethereum&logoColor=white" alt="Sepolia" /></a>
   <a href="https://www.hackquest.io/hackathons/ChainHack"><img src="https://img.shields.io/badge/ChainHack-2026-3ecf8e?style=for-the-badge" alt="ChainHack" /></a>
 </p>
 
 <p align="center">
-  <a href="https://shiftledger.vercel.app">Live app</a> ·
+  <a href="https://shiftledger-nine.vercel.app">Live app</a> ·
   <a href="docs/ARCHITECTURE.md">Architecture</a> ·
   <a href="SUBMISSION.md">Submission copy</a>
 </p>
@@ -43,7 +43,7 @@ Built for **[ChainHack 2026](https://www.hackquest.io/hackathons/ChainHack)** �
 
 ## Try it (3 min demo)
 
-1. Open **[shiftledger.vercel.app](https://shiftledger.vercel.app)** (or `npm run dev`)
+1. Open **[shiftledger-nine.vercel.app](https://shiftledger-nine.vercel.app)** (or `npm run dev`)
 2. Connect wallet on **Ethereum Sepolia**
 3. **Quick demo** → AI flags overtime row → **Faucet sUSD** → **Settle batch**
 4. **Worker receipts** tab → on-chain payment history
