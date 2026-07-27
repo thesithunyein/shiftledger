@@ -9,7 +9,6 @@ import {
 } from "wagmi";
 import { formatUnits, parseUnits, type Hex } from "viem";
 import { Bot, CheckCircle2, Coins, ExternalLink, Loader2, Play, ShieldCheck } from "lucide-react";
-import { BrandMark } from "./components/BrandMark";
 import { SiteBar } from "./components/SiteBar";
 import { erc20Abi, shiftLedgerAbi } from "./lib/abis";
 import { explorerAddr, explorerTx, getDeployment, isDeployed, shortAddr } from "./lib/deployment";
@@ -260,7 +259,6 @@ export function App() {
         {tab === "employer" && (
           <>
             <header className="page-head">
-              <BrandMark size={48} />
               <div>
                 <h1>Batch payroll</h1>
                 <p>Industrial shift wages — AI-validated, stablecoin-settled, receipt-verified.</p>
@@ -445,7 +443,6 @@ export function App() {
         {tab === "worker" && (
           <>
             <header className="page-head">
-              <BrandMark size={48} />
               <div>
                 <h1>Receipts</h1>
                 <p>Immutable wage receipts — verified on Ethereum Sepolia.</p>
