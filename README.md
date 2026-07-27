@@ -1,12 +1,18 @@
 <p align="center">
-  <strong>ShiftLedger</strong><br/>
-  AI-validated stablecoin payroll for industrial shift workers
+  <img src="frontend/public/logo.png" alt="ShiftLedger" width="120" />
+</p>
+
+<h1 align="center">ShiftLedger</h1>
+
+<p align="center">
+  <strong>AI-validated stablecoin payroll for industrial shift workers</strong><br/>
+  Upload payroll · AI validates · Batch settle · On-chain receipts
 </p>
 
 <p align="center">
-  <a href="https://shiftledger-nine.vercel.app"><img src="https://img.shields.io/badge/Live-Demo-f5a623?style=for-the-badge" alt="Live demo" /></a>
+  <a href="https://shiftledger-nine.vercel.app"><img src="https://img.shields.io/badge/Live-Demo-52A6E2?style=for-the-badge" alt="Live demo" /></a>
   <a href="https://sepolia.etherscan.io/address/0x5b421eb54218b48c7064605fb957ffef2b6b5f8a"><img src="https://img.shields.io/badge/Sepolia-Contract-627EEA?style=for-the-badge&logo=ethereum&logoColor=white" alt="Sepolia" /></a>
-  <a href="https://www.hackquest.io/hackathons/ChainHack"><img src="https://img.shields.io/badge/ChainHack-2026-3ecf8e?style=for-the-badge" alt="ChainHack" /></a>
+  <a href="https://www.hackquest.io/hackathons/ChainHack"><img src="https://img.shields.io/badge/ChainHack-2026-6A6D71?style=for-the-badge" alt="ChainHack" /></a>
 </p>
 
 <p align="center">
