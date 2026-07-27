@@ -1,4 +1,4 @@
-import { isAddress, keccak256, toHex } from "viem";
+import { getAddress, isAddress, keccak256, toHex } from "viem";
 
 export type PayrollRow = {
   name: string;
@@ -37,15 +37,29 @@ export type AgentReport = {
 
 const CSV_HEADER = "name,wallet,hours,rate_usd,role";
 
+function normalizeWallet(value: string): string {
+  const raw = value.trim();
+  if (!/^0x[a-fA-F0-9]{40}$/.test(raw)) return raw;
+  try {
+    return getAddress(raw.toLowerCase() as `0x${string}`);
+  } catch {
+    return raw;
+  }
+}
+
 /** Demo roster — KL factory, Week 30. Siti flagged for 52h overtime. */
 export function demoCsv(viewerWallet?: string): string {
-  const you = viewerWallet ?? "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
+  const you = normalizeWallet(viewerWallet ?? "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+  const siti = normalizeWallet("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC");
+  const raj = normalizeWallet("0x90F79bf6EB2c4f870365E785982E1f101E93b906");
+  const nurul = normalizeWallet("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65");
+  const tan = normalizeWallet("0x9965507D1a55BcC2695c58Ba16Eb3D46B0D6f814");
   return `${CSV_HEADER}
 Aung Min,${you},48,4.50,Line Operator
-Siti Rahman,0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC,52,5.00,QC Inspector
-Raj Kumar,0x90F79bf6EB2c4f870365E785982E1f101E93b906,44,4.75,Packaging Lead
-Nurul Izza,0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65,40,4.25,Logistics Handler
-Tan Wei Ming,0x9965507D1a55bcC2695C58ba16EB3d46B0D6F814,36,6.00,Shift Supervisor`;
+Siti Rahman,${siti},52,5.00,QC Inspector
+Raj Kumar,${raj},44,4.75,Packaging Lead
+Nurul Izza,${nurul},40,4.25,Logistics Handler
+Tan Wei Ming,${tan},36,6.00,Shift Supervisor`;
 }
 
 export function parsePayrollCsv(text: string): PayrollRow[] {
@@ -65,7 +79,8 @@ export function parsePayrollCsv(text: string): PayrollRow[] {
   return lines.slice(1).map((line) => {
     const parts = line.split(",").map((p) => p.trim());
     if (parts.length < 5) throw new Error(`Invalid row: ${line}`);
-    const [name, wallet, hoursRaw, rateRaw, role] = parts;
+    const [name, walletRaw, hoursRaw, rateRaw, role] = parts;
+    const wallet = normalizeWallet(walletRaw);
     const hours = Number(hoursRaw);
     const rateUsd = Number(rateRaw);
     if (!Number.isFinite(hours) || !Number.isFinite(rateUsd)) {
