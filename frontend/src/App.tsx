@@ -26,6 +26,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
+import { BrandMark } from "./components/BrandMark";
 import { SiteBar } from "./components/SiteBar";
 import { SiteFooter } from "./components/SiteFooter";
 import { useTheme } from "./hooks/useTheme";
@@ -338,6 +339,10 @@ export function App() {
         <main className="main landing">
           <section className="product-hero reveal">
             <div>
+              <div className="hero-brand">
+                <BrandMark size={72} theme={theme} bare />
+                <span className="hero-brand-name">ShiftLedger</span>
+              </div>
               <p className="eyebrow">Factory payroll</p>
               <h1>Pay shift workers on time. Give every worker proof.</h1>
               <p className="hero-copy">

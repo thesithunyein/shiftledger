@@ -337,28 +337,28 @@ textarea {
     background 0.3s ease;
 }
 
+.brand-mark-wrap.is-bare {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
 .brand-mark-wrap.is-light {
-  background: #ffffff;
-  border: 1px solid var(--line);
-  box-shadow: 0 1px 2px rgba(11, 18, 32, 0.04);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .brand-mark-wrap.is-dark {
-  background: #152033;
-  border: 1px solid var(--line);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .sitebar-brand:hover .brand-mark-wrap {
   transform: rotate(-3deg) scale(1.05);
-}
-
-.sitebar-brand:hover .brand-mark-wrap.is-light {
-  box-shadow: 0 6px 18px rgba(11, 107, 203, 0.16);
-}
-
-.sitebar-brand:hover .brand-mark-wrap.is-dark {
-  box-shadow: 0 8px 22px rgba(78, 161, 240, 0.22);
 }
 
 .brand-mark-wrap img {
@@ -366,7 +366,20 @@ textarea {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 3px;
+  padding: 0;
+}
+
+.hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.1rem;
+}
+
+.hero-brand-name {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
 }
 
 .main {
