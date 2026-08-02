@@ -432,6 +432,65 @@ export function App() {
             </div>
           </section>
 
+          <section className="platform-section faq-section reveal">
+            <header className="section-head">
+              <p className="eyebrow">Questions</p>
+              <h2>Common questions</h2>
+              <p>Straight answers for HR teams and workers — no jargon.</p>
+            </header>
+            <div className="faq-list">
+              <details className="faq-item" open>
+                <summary>Who is ShiftLedger for?</summary>
+                <p>
+                  Factory HR and payroll clerks who pay shift workers each week — and workers who need a clear
+                  pay slip after they get paid.
+                </p>
+              </details>
+              <details className="faq-item">
+                <summary>Do I need to understand crypto?</summary>
+                <p>
+                  No. You sign in, add your team, review the week, and pay. The product speaks payroll language
+                  — hours, rates, overtime, and pay slips.
+                </p>
+              </details>
+              <details className="faq-item">
+                <summary>How do I add workers?</summary>
+                <p>
+                  Add them one by one in the workspace, or import a CSV with name, payout account, hours, rate,
+                  and role. Download the template from the roster panel.
+                </p>
+              </details>
+              <details className="faq-item">
+                <summary>What does the review step do?</summary>
+                <p>
+                  It checks hours, overtime, wage rates, and payout accounts before money moves — so you can
+                  fix issues first, then approve pay.
+                </p>
+              </details>
+              <details className="faq-item">
+                <summary>When do pay slips appear?</summary>
+                <p>
+                  Only after a real payout. Draft names never show as verified slips. Workers open Pay slips
+                  with the same account that received wages.
+                </p>
+              </details>
+              <details className="faq-item">
+                <summary>Is this real money today?</summary>
+                <p>
+                  The live app runs on a public test network with test funds so anyone can try the full flow
+                  safely. The same steps are designed for real stablecoin payroll later.
+                </p>
+              </details>
+              <details className="faq-item">
+                <summary>Is my roster saved?</summary>
+                <p>
+                  Yes — company name, pay period, and workers stay in your browser so a refresh doesn’t wipe
+                  this week’s draft. Cleared only if you clear the roster yourself.
+                </p>
+              </details>
+            </div>
+          </section>
+
           <section className="cta-band reveal">
             <div>
               <h2>Ready to run this week’s payroll?</h2>
