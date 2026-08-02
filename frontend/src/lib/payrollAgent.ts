@@ -115,7 +115,7 @@ export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
         severity: "error",
         row: rowNum,
         field: "wallet",
-        message: `${row.name}: invalid wallet — worker cannot receive on-chain receipt`,
+        message: `${row.name}: payout account invalid — worker cannot receive payment proof`,
       });
     } else {
       wallets.set(row.wallet.toLowerCase(), (wallets.get(row.wallet.toLowerCase()) ?? 0) + 1);
@@ -126,7 +126,7 @@ export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
         severity: "error",
         row: rowNum,
         field: "hours",
-        message: `${row.name}: ${row.hours}h outside policy (1–80h/week)`,
+        message: `${row.name}: ${row.hours}h outside factory policy (1–80h/week)`,
       });
     } else if (row.hours > 48) {
       overtimeRows++;
@@ -134,7 +134,7 @@ export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
         severity: "warning",
         row: rowNum,
         field: "hours",
-        message: `${row.name}: ${row.hours}h exceeds standard shift — HR review recommended (Industrial 5.0 compliance)`,
+        message: `${row.name}: ${row.hours}h overtime — HR should review before next shift week`,
       });
     }
 
@@ -144,7 +144,7 @@ export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
         severity: "warning",
         row: rowNum,
         field: "rate_usd",
-        message: `${row.name}: $${row.rateUsd}/hr outside SEA manufacturing wage band`,
+        message: `${row.name}: $${row.rateUsd}/hr looks unusual for SEA factory wages`,
       });
     }
 
@@ -152,52 +152,52 @@ export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
       issues.push({
         severity: "warning",
         row: rowNum,
-        message: `${row.name}: $${row.amountUsd.toFixed(2)} exceeds auto-approve threshold ($500)`,
+        message: `${row.name}: $${row.amountUsd.toFixed(2)} above auto-approve limit ($500)`,
       });
     }
   });
 
   if (rows.length === 0) {
-    issues.push({ severity: "error", message: "Empty payroll batch" });
+    issues.push({ severity: "error", message: "Roster is empty" });
   }
 
   if (totalUsd > 10_000) {
     issues.push({
       severity: "error",
-      message: `Batch total $${totalUsd.toFixed(2)} exceeds demo ceiling ($10,000)`,
+      message: `Payroll total $${totalUsd.toFixed(2)} exceeds demo limit ($10,000)`,
     });
   }
 
   const policyChecks: PolicyCheck[] = [
     {
       id: "wallets",
-      label: "Worker wallet validity",
+      label: "Payout accounts",
       passed: invalidWallets === 0 && rows.length > 0,
-      detail: invalidWallets === 0 ? `${rows.length} valid addresses` : `${invalidWallets} invalid`,
+      detail: invalidWallets === 0 ? `${rows.length} ready to pay` : `${invalidWallets} invalid`,
     },
     {
       id: "hours",
-      label: "Shift hour compliance",
+      label: "Shift hours",
       passed: !issues.some((i) => i.field === "hours" && i.severity === "error"),
-      detail: overtimeRows > 0 ? `${overtimeRows} overtime flag(s)` : "Within limits",
+      detail: overtimeRows > 0 ? `${overtimeRows} overtime flag(s)` : "Within policy",
     },
     {
       id: "rates",
-      label: "SEA wage band check",
+      label: "Wage rates",
       passed: rateAnomalies === 0,
-      detail: rateAnomalies === 0 ? "Rates normal" : `${rateAnomalies} anomaly(s)`,
+      detail: rateAnomalies === 0 ? "Rates look normal" : `${rateAnomalies} to review`,
     },
     {
       id: "batch",
-      label: "Batch total & roster size",
+      label: "Batch size",
       passed: rows.length > 0 && totalUsd <= 10_000,
       detail: `$${totalUsd.toFixed(2)} · ${rows.length} workers`,
     },
     {
       id: "hash",
-      label: "Payroll integrity hash",
+      label: "Payment proof record",
       passed: rows.length > 0,
-      detail: "Bound to on-chain settlement",
+      detail: "Ready to attach to payslips",
     },
   ];
 
@@ -208,11 +208,11 @@ export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
 
   let summary: string;
   if (!approved) {
-    summary = `Blocked: ${errors} critical issue(s). Fix roster before stablecoin settlement.`;
+    summary = `Blocked: ${errors} critical issue(s). Fix the roster before paying workers.`;
   } else if (warnings > 0) {
-    summary = `Approved with ${warnings} review flag(s). Safe to settle — HR should verify overtime rows.`;
+    summary = `Ready to pay with ${warnings} HR flag(s). Overtime rows should be reviewed.`;
   } else {
-    summary = "Approved. Payroll passes all policy checks. Ready for batch settlement.";
+    summary = "Approved. Roster looks clean. Ready to pay this shift week.";
   }
 
   return {

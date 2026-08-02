@@ -25,7 +25,7 @@ export function SiteBar({
           <span className="sitebar-title">ShiftLedger</span>
         </a>
 
-        <span className="sitebar-pill">Sepolia</span>
+        <span className="sitebar-pill">Factory demo</span>
 
         <nav className="sitebar-nav" aria-label="Main">
           <button
@@ -33,14 +33,14 @@ export function SiteBar({
             className={`sitebar-link ${tab === "employer" ? "active" : ""}`}
             onClick={() => onTabChange("employer")}
           >
-            Payroll
+            For HR
           </button>
           <button
             type="button"
             className={`sitebar-link ${tab === "worker" ? "active" : ""}`}
             onClick={() => onTabChange("worker")}
           >
-            Receipts
+            For workers
           </button>
         </nav>
 
@@ -49,12 +49,12 @@ export function SiteBar({
             <>
               <span className="wallet-chip">{address?.slice(0, 6)}…{address?.slice(-4)}</span>
               <button type="button" className="btn btn-ghost" onClick={onDisconnect}>
-                Disconnect
+                Sign out
               </button>
             </>
           ) : (
             <button type="button" className="btn btn-primary" disabled={connecting} onClick={onConnect}>
-              Connect wallet
+              {connecting ? "Signing in…" : "Sign in to pay"}
             </button>
           )}
         </div>

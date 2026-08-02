@@ -168,6 +168,92 @@ a:hover {
   padding: 2rem 1.25rem 3rem;
 }
 
+.product-hero {
+  margin-bottom: 1.5rem;
+  padding: 1.4rem 1.35rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(circle at top right, rgba(82, 166, 226, 0.16), transparent 45%),
+    var(--bg-card);
+}
+
+.product-hero .eyebrow {
+  margin: 0 0 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sl-blue);
+}
+
+.product-hero h1 {
+  margin: 0;
+  font-size: clamp(1.45rem, 3vw, 1.9rem);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.product-hero > p {
+  margin: 0.65rem 0 0;
+  max-width: 46rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
+
+.hero-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.hero-points li::before {
+  content: "✓ ";
+  color: var(--green);
+  font-weight: 700;
+}
+
+.pay-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+  font-size: 0.82rem;
+}
+
+.pay-stack strong {
+  font-family: var(--mono);
+}
+
+.receipt-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.receipt-amount small {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.receipt-verified.preview {
+  color: var(--warn);
+}
+
 .page-head {
   display: flex;
   align-items: center;

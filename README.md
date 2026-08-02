@@ -74,10 +74,10 @@ Full notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 ## Try it
 
 1. Open **[shiftledger.sithunyein.com](https://shiftledger.sithunyein.com)**
-2. Connect wallet on **Ethereum Sepolia**
-3. Click **Run payroll flow** (or Load sample → Validate)
-4. Review **Payroll Intelligence Agent** — policy checks + reasoning trace
-5. **Get sUSD** → **Settle** → open **Receipts** for on-chain proof
+2. Click **Preview without wallet** (works for non-crypto users)
+3. Review overtime flags and USD + MYR pay totals
+4. Optional: **Sign in to pay** on Sepolia → **Pay this week**
+5. Open **For workers** to see pay slips / verified proof
 
 ---
 
