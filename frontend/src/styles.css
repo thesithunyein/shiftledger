@@ -369,17 +369,32 @@ textarea {
   padding: 0;
 }
 
-.hero-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  margin-bottom: 1.1rem;
+.hero-visual {
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
 }
 
-.hero-brand-name {
-  font-size: 1.45rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+.home-icon {
+  width: min(280px, 70%);
+  height: auto;
+  display: block;
+  object-fit: contain;
+  animation: riseIn 0.55s var(--ease-out) both;
+  filter: drop-shadow(0 12px 28px rgba(11, 18, 32, 0.1));
+  transition: transform 0.35s var(--ease-out);
+}
+
+.home-icon:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+[data-theme="dark"] .home-icon {
+  filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.45));
+}
+
+.hero-visual .hero-card {
+  width: 100%;
 }
 
 .main {
