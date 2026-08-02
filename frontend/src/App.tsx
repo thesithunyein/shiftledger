@@ -434,7 +434,7 @@ export function App() {
             <header className="section-head">
               <p className="eyebrow">Questions</p>
               <h2>Common questions</h2>
-              <p>Straight answers for HR teams and workers — no jargon.</p>
+              <p>Straight answers for HR teams and workers.</p>
             </header>
             <div className="faq-list">
               <details className="faq-item" open>
