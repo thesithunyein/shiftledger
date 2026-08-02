@@ -354,16 +354,14 @@ export function App() {
               <p className="meta">Sign in with your payout account to start this week’s payroll.</p>
             </div>
             <aside className="hero-visual reveal delay-1">
-              <div className="home-icon-frame home-icon-frame-solo">
-                <img
-                  className="home-icon"
-                  src={theme === "dark" ? "/home-icon-dark.png" : "/home-icon.png"}
-                  alt=""
-                  width={320}
-                  height={268}
-                  draggable={false}
-                />
-              </div>
+              <img
+                className="home-icon home-icon-solo"
+                src={theme === "dark" ? "/home-icon-dark.png" : "/home-icon.png"}
+                alt=""
+                width={420}
+                height={352}
+                draggable={false}
+              />
             </aside>
           </section>
 
