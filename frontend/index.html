@@ -3,25 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ShiftLedger — Industrial Shift Payroll</title>
+    <title>ShiftLedger — Industrial payroll for shift workers</title>
     <meta
       name="description"
-      content="AI-validated stablecoin payroll for factory shift workers — validate, batch settle, on-chain receipts."
+      content="AI-reviewed factory payroll for Industrial 5.0. HR pays shift workers in one step. Workers keep verified pay slips."
     />
-    <meta property="og:title" content="ShiftLedger" />
+    <meta property="og:title" content="ShiftLedger — Industrial payroll" />
     <meta
       property="og:description"
-      content="Stablecoin payroll for industrial shift workers. AI validation · batch settlement · verifiable receipts."
+      content="Human-centric factory payroll: AI roster review, batch payout, verified worker pay slips. Built for Southeast Asia."
     />
-    <meta property="og:image" content="https://shiftledger.sithunyein.com/logo.png" />
+    <meta property="og:image" content="https://shiftledger.sithunyein.com/logo-light.png" />
     <meta property="og:url" content="https://shiftledger.sithunyein.com" />
-    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="icon" type="image/png" href="/logo-light.png" />
+    <link rel="apple-touch-icon" href="/logo-light.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@450;500&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("shiftledger-theme");
+          document.documentElement.dataset.theme = t === "dark" ? "dark" : "light";
+          document.documentElement.style.colorScheme = document.documentElement.dataset.theme;
+        } catch (e) {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

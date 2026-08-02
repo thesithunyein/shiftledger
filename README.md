@@ -1,38 +1,59 @@
 <p align="center">
-  <img src="frontend/public/logo.png" alt="ShiftLedger" width="112" />
+  <img src="frontend/public/logo-light.png" alt="ShiftLedger" width="96" />
 </p>
 
 <h1 align="center">ShiftLedger</h1>
 
 <p align="center">
-  <strong>Stablecoin payroll for industrial shift workers</strong><br/>
-  Validate · Batch pay · On-chain receipts
+  <strong>Payroll for factory shift workers</strong><br/>
+  Review rosters · Pay the week · Verified pay slips
 </p>
 
 <p align="center">
-  <a href="https://shiftledger.sithunyein.com"><img src="https://img.shields.io/badge/Live-App-52A6E2?style=for-the-badge&logo=vercel&logoColor=white" alt="Live app" /></a>
-  <a href="https://sepolia.etherscan.io/address/0x5b421eb54218b48c7064605fb957ffef2b6b5f8a"><img src="https://img.shields.io/badge/ETH-Sepolia-627EEA?style=for-the-badge&logo=ethereum&logoColor=white" alt="Sepolia" /></a>
-  <a href="#license"><img src="https://img.shields.io/badge/License-MIT-4ecf9a?style=for-the-badge&logo=shield&logoColor=white" alt="MIT" /></a>
+  <a href="https://shiftledger.sithunyein.com"><img src="https://img.shields.io/badge/Live-App-0b6bcb?style=for-the-badge&logo=vercel&logoColor=white" alt="Live app" /></a>
+  <a href="https://github.com/thesithunyein/shiftledger/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/thesithunyein/shiftledger/ci.yml?branch=master&style=for-the-badge&label=CI" alt="CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-4ecf9a?style=for-the-badge" alt="MIT" /></a>
 </p>
 
 <p align="center">
   <a href="https://shiftledger.sithunyein.com">Live app</a> ·
-  <a href="https://github.com/thesithunyein/shiftledger">GitHub</a> ·
-  <a href="docs/ARCHITECTURE.md">Architecture</a>
+  <a href="docs/ARCHITECTURE.md">Architecture</a> ·
+  <a href="docs/SECURITY.md">Security</a>
 </p>
 
 ---
 
-## What it is
+## Product
 
-ShiftLedger helps factory payroll clerks **upload shift rosters**, **validate payroll with an AI agent**, and **batch-settle stablecoin wages** with immutable on-chain receipts for every worker.
+ShiftLedger is a **factory payroll workspace** for industrial teams.
 
-| Step | Actor | Action |
-|------|-------|--------|
-| Upload | Employer | CSV shift roster |
-| Validate | AI agent | Hours, rates, wallet checks |
-| Settle | Employer | One stablecoin batch tx |
-| Verify | Worker | On-chain wage receipt |
+HR adds this week’s workers, runs an automated roster review (hours, overtime, rates, payout accounts), pays the team in one batch, and every worker receives a **verified pay slip**.
+
+| Step | Who | What happens |
+|------|-----|----------------|
+| 1 | Employer | Add workers or import a CSV roster |
+| 2 | Review engine | Flags overtime, rate anomalies, invalid payout accounts |
+| 3 | Employer | Pays the approved batch |
+| 4 | Worker | Opens verified pay slips for their account |
+
+**Who it’s for**
+
+- Factory HR / payroll clerks
+- Shift workers who need clear proof of wages
+- Operations teams that want an audit trail without spreadsheet chaos
+
+---
+
+## Live product
+
+**App:** [shiftledger.sithunyein.com](https://shiftledger.sithunyein.com)
+
+1. Sign in with your payout account  
+2. Add workers (or import CSV)  
+3. Review roster → **Pay team**  
+4. Open **Pay slips** for verified records after payment  
+
+Network today: **Ethereum Sepolia** (testnet) with mock sUSD for safe trials. Same product flow is designed for mainnet stablecoin settlement later.
 
 ---
 
@@ -40,44 +61,14 @@ ShiftLedger helps factory payroll clerks **upload shift rosters**, **validate pa
 
 ```mermaid
 flowchart LR
-  A[Employer] -->|CSV roster| B[Validation agent]
-  B -->|approved batch| C[ShiftLedger]
-  C -->|sUSD transfer| D[Workers]
-  C -->|receipt| E[On-chain ledger]
-  D -->|view| E
+  A[Employer] -->|Roster| B[Review engine]
+  B -->|Approved batch| C[ShiftLedger]
+  C -->|Wage transfer| D[Workers]
+  C -->|Receipt| E[Payment ledger]
+  D -->|View| E
 ```
 
-```mermaid
-sequenceDiagram
-  participant HR as Payroll clerk
-  participant AI as Validation agent
-  participant SL as ShiftLedger
-  participant USD as sUSD
-  participant W as Worker wallet
-
-  HR->>AI: Upload shift roster
-  AI-->>HR: Approve / flag anomalies
-  HR->>USD: Approve batch amount
-  HR->>SL: settleBatch(workers, amounts)
-  SL->>USD: pull employer balance
-  loop Each worker
-    SL->>W: transfer wage
-    SL->>SL: store receipt
-  end
-  W->>SL: read receipt history
-```
-
-Full notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
-
----
-
-## Try it
-
-1. Open **[shiftledger.sithunyein.com](https://shiftledger.sithunyein.com)**
-2. Click **Preview without wallet** (works for non-crypto users)
-3. Review overtime flags and USD + MYR pay totals
-4. Optional: **Sign in to pay** on Sepolia → **Pay this week**
-5. Open **For workers** to see pay slips / verified proof
+Details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 ---
 
@@ -85,19 +76,19 @@ Full notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 | Layer | Tech |
 |-------|------|
-| Contracts | Hardhat 3 · Solidity · OpenZeppelin |
-| Stablecoin | MockUSDC (sUSD) on Sepolia |
+| Contracts | Hardhat · Solidity · OpenZeppelin |
+| Settlement | MockUSDC (sUSD) on Sepolia |
 | App | Vite · React · wagmi · viem |
-| Validation | Payroll intelligence engine |
+| Review | Policy-based payroll intelligence engine |
 
 ---
 
-## Sepolia contracts
+## Contracts (Sepolia)
 
 | Contract | Address |
 |----------|---------|
-| ShiftLedger | [`0x5b42…5f8a`](https://sepolia.etherscan.io/address/0x5b421eb54218b48c7064605fb957ffef2b6b5f8a) |
-| sUSD | [`0x4c48…76d6`](https://sepolia.etherscan.io/address/0x4c485e4028041e9b27ee65efcfe1cd74f0ca76d6) |
+| ShiftLedger | [`0x5b421eb54218b48c7064605fb957ffef2b6b5f8a`](https://sepolia.etherscan.io/address/0x5b421eb54218b48c7064605fb957ffef2b6b5f8a) |
+| sUSD | [`0x4c485e4028041e9b27ee65efcfe1cd74f0ca76d6`](https://sepolia.etherscan.io/address/0x4c485e4028041e9b27ee65efcfe1cd74f0ca76d6) |
 
 ---
 
@@ -109,30 +100,34 @@ cd shiftledger
 npm run install:all
 cp .env.example .env
 npm run compile
-npm run deploy:sepolia
+npm run test
 npm run dev
 ```
 
-Vercel root directory: `frontend`
+- App root for Vercel: `frontend`
+- Env template: [`.env.example`](.env.example)
+- Contributing: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
 ---
 
 ## Roadmap
 
-| Phase | Deliverable |
-|-------|---------------|
-| Now | Sepolia demo, batch settle, on-chain receipts |
-| Next | MYR/PHP off-ramp via regulated partners (BSP sandbox) |
-| Next | HRIS CSV export + auditor dashboard |
-| Next | Cloud LLM agent (Google Cloud / AWS Lambda) |
+| Phase | Focus |
+|-------|--------|
+| Now | Live payroll workspace on Sepolia · roster review · batch pay · verified slips |
+| Next | Mainnet stablecoin settlement · regulated off-ramp (MYR / PHP) |
+| Next | HRIS CSV sync · auditor dashboard · multi-factory orgs |
+| Later | Account abstraction for workers · cloud LLM review assist |
 
-## Limitations (honest)
+## Current limitations
 
-- Testnet only (Sepolia) with mock sUSD
-- Payroll agent uses policy rules today — LLM API-ready architecture
-- Single-employer demo; multi-factory admin planned
-- Workers need a wallet (social recovery / AA planned)
+- Testnet settlement only (Sepolia + mock sUSD)
+- Review engine uses deterministic policy rules (LLM-ready architecture)
+- Single employer workspace (multi-org admin planned)
+- Workers need a payout account (simpler onboarding planned)
+
+---
 
 ## License
 
-MIT
+[MIT](LICENSE)

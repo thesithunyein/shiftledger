@@ -27,7 +27,7 @@ export function buildAgentInsight(rows: PayrollRow[], report: AgentReport): Agen
       id: "parse",
       label: "Read shift roster",
       status: rows.length > 0 ? "done" : "fail",
-      detail: rows.length > 0 ? `${rows.length} workers loaded from CSV` : "Empty roster",
+      detail: rows.length > 0 ? `${rows.length} workers on this week’s roster` : "Empty roster",
     },
     {
       id: "wallets",

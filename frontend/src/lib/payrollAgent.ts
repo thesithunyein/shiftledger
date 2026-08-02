@@ -47,20 +47,12 @@ function normalizeWallet(value: string): string {
   }
 }
 
-/** Demo roster — KL factory, Week 30. Siti flagged for 52h overtime. */
-export function demoCsv(viewerWallet?: string): string {
-  const you = normalizeWallet(viewerWallet ?? "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
-  const siti = normalizeWallet("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC");
-  const raj = normalizeWallet("0x90F79bf6EB2c4f870365E785982E1f101E93b906");
-  const nurul = normalizeWallet("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65");
-  const tan = normalizeWallet("0x9965507D1a55BcC2695c58Ba16Eb3D46B0D6f814");
-  return `${CSV_HEADER}
-Aung Min,${you},48,4.50,Line Operator
-Siti Rahman,${siti},52,5.00,QC Inspector
-Raj Kumar,${raj},44,4.75,Packaging Lead
-Nurul Izza,${nurul},40,4.25,Logistics Handler
-Tan Wei Ming,${tan},36,6.00,Shift Supervisor`;
+/** Empty CSV template for HR import (no invented workers). */
+export function csvTemplate(): string {
+  return `${CSV_HEADER}\n`;
 }
+
+export { CSV_HEADER };
 
 export function parsePayrollCsv(text: string): PayrollRow[] {
   const lines = text
@@ -164,7 +156,7 @@ export function runPayrollAgent(rows: PayrollRow[]): AgentReport {
   if (totalUsd > 10_000) {
     issues.push({
       severity: "error",
-      message: `Payroll total $${totalUsd.toFixed(2)} exceeds demo limit ($10,000)`,
+      message: `Payroll total $${totalUsd.toFixed(2)} exceeds batch limit ($10,000)`,
     });
   }
 
