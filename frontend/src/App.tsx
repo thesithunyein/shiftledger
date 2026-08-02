@@ -351,17 +351,19 @@ export function App() {
                   <ArrowRight size={16} className="btn-icon btn-icon-trail" />
                 </button>
               </div>
-              <p className="meta">Sign in with your payout account. You add your own workers — nothing is invented.</p>
+              <p className="meta">Sign in with your payout account to start this week’s payroll.</p>
             </div>
             <aside className="hero-visual reveal delay-1">
-              <img
-                className="home-icon"
-                src="/home-icon.png"
-                alt=""
-                width={280}
-                height={235}
-                draggable={false}
-              />
+              <div className="home-icon-frame">
+                <img
+                  className="home-icon"
+                  src={theme === "dark" ? "/home-icon-dark.png" : "/home-icon.png"}
+                  alt=""
+                  width={280}
+                  height={235}
+                  draggable={false}
+                />
+              </div>
               <div className="hero-card">
                 <h3>Weekly payroll flow</h3>
                 <ol>
@@ -421,8 +423,8 @@ export function App() {
                 <span className="value-icon">
                   <Building2 size={18} />
                 </span>
-                <h3>Built for Web2 teams</h3>
-                <p>Payroll language first. Settlement infrastructure underneath — no crypto jargon in the product.</p>
+                <h3>Simple for every team</h3>
+                <p>Payroll language first. Secure settlement underneath — no jargon in the day-to-day product.</p>
               </article>
             </div>
           </section>
