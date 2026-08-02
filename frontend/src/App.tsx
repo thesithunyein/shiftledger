@@ -354,36 +354,15 @@ export function App() {
               <p className="meta">Sign in with your payout account to start this week’s payroll.</p>
             </div>
             <aside className="hero-visual reveal delay-1">
-              <div className="home-icon-frame">
+              <div className="home-icon-frame home-icon-frame-solo">
                 <img
                   className="home-icon"
                   src={theme === "dark" ? "/home-icon-dark.png" : "/home-icon.png"}
                   alt=""
-                  width={280}
-                  height={235}
+                  width={320}
+                  height={268}
                   draggable={false}
                 />
-              </div>
-              <div className="hero-card">
-                <h3>Weekly payroll flow</h3>
-                <ol>
-                  <li>
-                    <span className="step-num">1</span>
-                    <span>Sign in to your company payout account</span>
-                  </li>
-                  <li>
-                    <span className="step-num">2</span>
-                    <span>Add this week’s workers, hours, and rates</span>
-                  </li>
-                  <li>
-                    <span className="step-num">3</span>
-                    <span>Review overtime, rates, and payout accounts</span>
-                  </li>
-                  <li>
-                    <span className="step-num">4</span>
-                    <span>Pay once — workers get verified pay slips</span>
-                  </li>
-                </ol>
               </div>
             </aside>
           </section>

@@ -395,8 +395,14 @@ textarea {
   border: 1px solid var(--line);
 }
 
+.home-icon-frame-solo {
+  min-height: 320px;
+  height: 100%;
+  padding: 2rem 1.5rem;
+}
+
 .home-icon {
-  width: min(240px, 72%);
+  width: min(300px, 85%);
   height: auto;
   display: block;
   object-fit: contain;
