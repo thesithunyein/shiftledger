@@ -402,12 +402,12 @@ textarea {
 }
 
 .home-icon {
-  width: min(300px, 85%);
+  width: min(340px, 90%);
   height: auto;
   display: block;
   object-fit: contain;
   animation: riseIn 0.55s var(--ease-out) both;
-  filter: drop-shadow(0 10px 22px rgba(11, 18, 32, 0.1));
+  filter: drop-shadow(0 14px 28px rgba(11, 18, 32, 0.12));
   transition: transform 0.35s var(--ease-out);
 }
 
