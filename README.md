@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/public/logo-light.png" alt="ShiftLedger" width="96" />
+  <img src="frontend/public/logo.png" alt="ShiftLedger" width="112" />
 </p>
 
 <h1 align="center">ShiftLedger</h1>
